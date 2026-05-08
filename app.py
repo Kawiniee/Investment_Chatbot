@@ -138,18 +138,26 @@ def calculate_investment_return(
 
 @tool
 def search_investment_info(query: str) -> str:
-    """ค้นหาข้อมูลเกี่ยวกับการลงทุนจากฐานความรู้
+    """ค้นหาข้อมูลการลงทุนจาก Vector Database"""
 
-    Args:
-        query: คำถามเกี่ยวกับการลงทุน
+    docs_with_scores = vectorstore.similarity_search_with_score(
+        query,
+        k=3
+    )
 
-    Returns:
-        ข้อมูลที่เกี่ยวข้อง
-    """
-    docs = vectorstore.similarity_search(query, k=3)
-    result = "\n\n".join([d.page_content for d in docs])
-    logger.info(f"Search: '{query}' found {len(docs)} documents")
-    return result
+    filtered_docs = []
+
+    for doc, score in docs_with_scores:
+
+        logger.info(f"Retrieved score: {score}")
+
+        if score < 0.8:
+            filtered_docs.append(doc.page_content)
+
+    if not filtered_docs:
+        return "ไม่พบข้อมูลที่เกี่ยวข้อง"
+
+    return "\n\n".join(filtered_docs)
 
 @tool
 def recommend_portfolio(risk_level: str) -> str:
@@ -170,12 +178,31 @@ def recommend_portfolio(risk_level: str) -> str:
     logger.info(f"Portfolio recommendation for risk level: {risk_level}")
     return result
 
+@tool
+def calculate_dca(
+    monthly_investment: float,
+    annual_return: float,
+    years: int
+) -> float:
+    """คำนวณผลตอบแทนการลงทุนแบบ DCA"""
+
+    monthly_rate = annual_return / 100 / 12
+    months = years * 12
+
+    future_value = monthly_investment * (
+        ((1 + monthly_rate) ** months - 1)
+        / monthly_rate
+    ) * (1 + monthly_rate)
+
+    return round(future_value, 2)
+
 tools = [
     calculate_investment_return,
     search_investment_info,
-    recommend_portfolio
+    recommend_portfolio,
+    calculate_dca
 ]
-logger.info("Tools created: calculate_investment_return, search_investment_info, recommend_portfolio")
+logger.info("Tools created: calculate_investment_return, search_investment_info, recommend_portfolio, calculate_dca")
 
 # =============================================================================
 # 5. CREATE AGENT
@@ -192,7 +219,8 @@ system_prompt = """
 5. ถ้าต้องการคำนวณผลตอบแทน ให้ใช้ calculate_investment_return
 6. ถ้าต้องการข้อมูลเกี่ยวกับการลงทุน ให้ใช้ search_investment_info
 7. ถ้าต้องการแนะนำพอร์ตการลงทุน ให้ใช้ recommend_portfolio
-8. บันทึกการทำงานทุกครั้ง
+8. ถ้าต้องการคำนวณ DCA ให้ใช้ calculate_dca
+9. บันทึกการทำงานทุกครั้ง
 """
 
 investment_agent = create_agent(
@@ -243,7 +271,8 @@ demo = gr.ChatInterface(
         ["ถ้าลงทุน 50,000 บาท อัตรา 8% ต่อปี 5 ปี จะได้เท่าไหร่?"],
         ["การลงทุนในกองทุนรวมเหมาะกับใคร?"],
         ["แนะนำพอร์ตการลงทุนสำหรับคนที่รับความเสี่ยงได้ปานกลาง"],
-        ["หลักการลงทุนที่ดีมีอะไรบ้าง?"]
+        ["หลักการลงทุนที่ดีมีอะไรบ้าง?"],
+        ["หากลงทุน 1,000 บาทต่อเดือน อัตรา 10% ต่อปี 10 ปี จะได้เท่าไหร่?"]
     ]
 )
 
