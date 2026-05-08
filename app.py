@@ -2,7 +2,7 @@
 AI Investment Advisor Chatbot
 =============================
 - Library: LangChain + LangGraph
-- Embedding Model: Google Gemini (text-embedding-004)
+- Embedding Model: Google Gemini (gemini-embedding-001)
 - Vector Search: ChromaDB
 - Tools: calculate_investment_return, search_investment_info, recommend_portfolio
 - Logging: บันทึกในไฟล์ logs/agent_YYYYMMDD.log
