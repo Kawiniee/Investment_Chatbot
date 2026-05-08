@@ -146,7 +146,7 @@ def search_investment_info(query: str) -> str:
     Returns:
         ข้อมูลที่เกี่ยวข้อง
     """
-    docs = vectorstore.similarity_search(query, k=2)
+    docs = vectorstore.similarity_search(query, k=3)
     result = "\n\n".join([d.page_content for d in docs])
     logger.info(f"Search: '{query}' found {len(docs)} documents")
     return result
