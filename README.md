@@ -20,9 +20,9 @@
       pip install -r requirements.txt
 4. ตั้งคีย์ API ของ Google ในไฟล์ .env (คัดลอกจาก .env.example ถ้ามี):
       GOOGLE_API_KEY=your_actual_api_key_here
-   
-การใช้งาน
-รันแชทบอท:
+
+การใช้งานรันแชทบอท:
+===================
 python app.py
 จะเห็นผลลัพธ์คล้ายกับ:
 กำลังเริ่ม AI Investment Advisor...
