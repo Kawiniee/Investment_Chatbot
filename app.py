@@ -4,7 +4,7 @@ AI Investment Advisor Chatbot
 - Library: LangChain + LangGraph
 - Embedding Model: Google Gemini (gemini-embedding-001)
 - Vector Search: ChromaDB
-- Tools: calculate_investment_return, search_investment_info, recommend_portfolio
+- Tools: calculate_investment_return, search_investment_info, recommend_portfolio, calculate_dca
 - Logging: บันทึกในไฟล์ logs/agent_YYYYMMDD.log
 - Web Interface: Gradio (localhost:7860)
 """
@@ -30,7 +30,7 @@ import uuid
 load_dotenv()
 
 # Set API Key
-os.environ["GOOGLE_API_KEY"] = os.getenv("GOOGLE_API_KEY", "")
+os.environ["GOOGLE_API_KEY"] = os.getenv("GOOGLE_API_KEY", "YOUR_API_KEY")
 
 # Create logs directory
 os.makedirs("logs", exist_ok=True)
